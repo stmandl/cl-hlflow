@@ -1,0 +1,79 @@
+This is a Common Lisp implementation of the HLFLOW algorithm for maximum flows 
+as of Dieter Jungnickel: "Graphs, Networks and Algorithms".
+
+Maximum flows are computed on directed graphs with edge capacities, 
+given a source node and a sink node.
+
+Networks are specified in strings or files that contain only
+unsigend integers, separated by whitespace.
+The first number specifies the number of nodes in the network.
+The remainder of the file contains the edge capacities for the
+connections in the network given as three consecutive numbers:
+<from-node> <to-node> <capacity>
+Please note that nodes are indexed starting with 0.
+
+Example:
+6
+0 1 16
+1 0 8
+0 2 13
+2 0 2
+1 2 10
+2 1 3
+1 3 12
+3 1 2
+2 4 14
+4 2 4
+3 2 9
+2 3 1
+3 5 20
+5 3 9
+4 3 7
+3 4 2
+4 5 4
+5 4 1
+
+In order to create networks, either use hlflow:read-network-from-string
+or hlflow:read-network-from-file.
+
+
+This code was tested with SBCL 1.0.55 and CLISP 2.49 on Ubuntu Linux.
+
+If you find bugs, please issue them at: https://bugs.launchpad.net/cl-hlflow
+
+Example:
+
+CL-USER> (asdf:load-system :cl-hlflow)
+
+CL-USER> (hlflow-example:small-1)
+24
+
+CL-USER> (hlflow-example:small-2)
+7
+CL-USER> (hlflow-example:small-1-graph)
+"digraph max_flow {
+  rankdir=LR;
+  node [shape = doublecircle]; N0 N5
+  node [shape = circle];
+  N0 -> N1 [ label = \"16/16\" ];
+  N0 -> N2 [ label = \"8/13\" ];
+  N1 -> N2 [ label = \"4/10\" ];
+  N1 -> N3 [ label = \"12/12\" ];
+  N2 -> N3 [ label = \"1/1\" ];
+  N2 -> N4 [ label = \"11/14\" ];
+  N3 -> N5 [ label = \"20/20\" ];
+  N4 -> N3 [ label = \"7/7\" ];
+  N4 -> N5 [ label = \"4/4\" ];
+}
+"
+
+If you have graphviz installed, you can try the following:
+
+CL-USER> (with-open-file (f "small.gv" :direction :output :if-exists :supersede)
+	   (princ (hlflow-example:small-reverse-flow-graph) f))
+
+... enter a shell and do:
+
+$ dot -T pdf small.gv  -o small.pdf
+
+... have fun!
